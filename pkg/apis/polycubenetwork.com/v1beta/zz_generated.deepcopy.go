@@ -21,6 +21,7 @@ limitations under the License.
 package v1beta
 
 import (
+	k8sfirewall "github.com/SunSince90/polycube/src/components/k8s/utils/k8sfirewall"
 	runtime "k8s.io/apimachinery/pkg/runtime"
 )
 
@@ -110,6 +111,11 @@ func (in *FirewallTemplateSpec) DeepCopyInto(out *FirewallTemplateSpec) {
 		for key, val := range *in {
 			(*out)[key] = val
 		}
+	}
+	if in.Rules != nil {
+		in, out := &in.Rules, &out.Rules
+		*out = make([]k8sfirewall.ChainRule, len(*in))
+		copy(*out, *in)
 	}
 	return
 }

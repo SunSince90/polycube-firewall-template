@@ -1,6 +1,9 @@
 package v1beta
 
-import metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+import (
+	k8sfirewall "github.com/SunSince90/polycube/src/components/k8s/utils/k8sfirewall"
+	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+)
 
 // +genclient
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
@@ -25,6 +28,7 @@ type FirewallTemplateStatus struct {
 type FirewallTemplateSpec struct {
 	DefaultActions map[string]FirewallTemplateDefaultAction
 	Message        string `json:"message,omitempty"`
+	Rules          []k8sfirewall.ChainRule
 }
 
 type FirewallTemplateDefaultAction struct {

@@ -6,6 +6,8 @@ import (
 	"syscall"
 	"time"
 
+	k8sfirewall "github.com/SunSince90/polycube/src/components/k8s/utils/k8sfirewall"
+
 	meta_v1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 
 	v1beta "github.com/SunSince90/polycube-firewall-template/pkg/apis/polycubenetwork.com/v1beta"
@@ -71,10 +73,18 @@ func main() {
 }
 
 func multiple(f fwt_clientset.Interface) {
+	rules := []k8sfirewall.ChainRule{}
+
+	for i := 0; i < 1000; i++ {
+		rules = append(rules, k8sfirewall.ChainRule{
+			Id:  int32(i),
+			Src: string(i),
+		})
+	}
 	firewallClientSet := f.PolycubenetworkV1beta().FirewallTemplates(meta_v1.NamespaceDefault)
 	fwt := v1beta.FirewallTemplate{
 		ObjectMeta: meta_v1.ObjectMeta{
-			Name: "Hello",
+			Name: "hello-world",
 		},
 		Spec: v1beta.FirewallTemplateSpec{
 			DefaultActions: map[string]v1beta.FirewallTemplateDefaultAction{
@@ -83,9 +93,11 @@ func multiple(f fwt_clientset.Interface) {
 					LastUpdate: time.Now().Unix(),
 				},
 			},
+			Rules: rules,
 		},
 	}
 
+	log.Infoln("Putting rules at", time.Now().Unix())
 	_, err := firewallClientSet.Create(&fwt)
 	if err != nil {
 		log.Infoln("error:", err)

@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"time"
 
+	k8sfirewall "github.com/SunSince90/polycube/src/components/k8s/utils/k8sfirewall"
+
 	v1beta "github.com/SunSince90/polycube-firewall-template/pkg/apis/polycubenetwork.com/v1beta"
 
 	log "github.com/Sirupsen/logrus"
@@ -25,6 +27,7 @@ type PcnFirewallTemplateController struct {
 	kclientset kubernetes.Interface
 	queue      workqueue.RateLimitingInterface
 	informer   cache.SharedIndexInformer
+	pclientset fwt_clientset.Interface
 	//handler    Handler
 }
 
@@ -92,6 +95,7 @@ func NewPcnFirewallTemplateController(kclientset kubernetes.Interface, pclientse
 		kclientset: kclientset,
 		informer:   informer,
 		queue:      queue,
+		pclientset: pclientset,
 		//handler:   &TestHandler{},
 	}
 
@@ -188,7 +192,23 @@ func (c *PcnFirewallTemplateController) processNextItem() bool {
 
 	if exists {
 		fwt := item.(*v1beta.FirewallTemplate)
-		log.Infof("firewall default actions is %+v\n", fwt.Spec.DefaultActions)
+		log.Infoln("Got rules at", time.Now().Unix(), fwt.Name)
+		fw, err := c.pclientset.PolycubenetworkV1beta().FirewallTemplates(meta_v1.NamespaceDefault).Get(fwt.Name, meta_v1.GetOptions{})
+		if err != nil {
+			log.Infoln("error in controller")
+		} else {
+			log.Infoln("got again")
+			fw.Spec.Rules = append(fw.Spec.Rules, k8sfirewall.ChainRule{
+				Id: 2000,
+			})
+			log.Infoln("updating at", time.Now().Unix(), fwt.Name)
+			ufw, err := c.pclientset.PolycubenetworkV1beta().FirewallTemplates(meta_v1.NamespaceDefault).Update(fw)
+			if err != nil {
+				log.Infoln("error in update")
+			} else {
+				log.Infoln("updated at", time.Now().Unix(), ufw.Name)
+			}
+		}
 	}
 
 	// if the item doesn't exist then it was deleted and we need to fire off the handler's
