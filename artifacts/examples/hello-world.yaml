@@ -1,0 +1,9 @@
+# A very basic example of a Firewall Template.
+# This is just for testing, it shouldn't be deployed by a human.
+---
+apiVersion: polycubenetwork.com/v1beta
+kind: FirewallTemplate
+metadata: 
+  name: firewall-template-hello-world
+spec:
+  description: "Hello, world!"
