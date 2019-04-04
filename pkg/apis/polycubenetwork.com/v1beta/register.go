@@ -31,7 +31,7 @@ func Resource(resource string) schema.GroupResource {
 
 // Adds the list of known types to the given scheme.
 func addKnownTypes(scheme *runtime.Scheme) error {
-	/*scheme.AddKnownTypes(
+	scheme.AddKnownTypes(
 		SchemeGroupVersion,
 		&FirewallTemplate{},
 		&FirewallTemplateList{},
@@ -43,9 +43,9 @@ func addKnownTypes(scheme *runtime.Scheme) error {
 	)
 
 	metav1.AddToGroupVersion(
-		scheme,
+		scheme, 
 		SchemeGroupVersion,
-	)*/
+	)
 
 	return nil
 }
