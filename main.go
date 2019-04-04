@@ -73,6 +73,9 @@ func main() {
 func multiple(f fwt_clientset.Interface) {
 	firewallClientSet := f.PolycubenetworkV1beta().FirewallTemplates(meta_v1.NamespaceDefault)
 	fwt := v1beta.FirewallTemplate{
+		ObjectMeta: meta_v1.ObjectMeta{
+			Name: "Hello!",
+		},
 		Spec: v1beta.FirewallTemplateSpec{
 			DefaultActions: map[string]v1beta.FirewallTemplateDefaultAction{
 				"ingress": v1beta.FirewallTemplateDefaultAction{
