@@ -23,8 +23,21 @@ type FirewallTemplateStatus struct {
 
 // FirewallTemplateSpec contains the specifications of this firewall template
 type FirewallTemplateSpec struct {
-	Message string `json:"message,omitempty"`
+	DefaultActions map[string]FirewallTemplateDefaultAction
+	Message        string `json:"message,omitempty"`
 }
+
+type FirewallTemplateDefaultAction struct {
+	Action     FirewallTemplateDefaultActionType
+	LastUpdate int64
+}
+
+type FirewallTemplateDefaultActionType string
+
+const (
+	Forward FirewallTemplateDefaultActionType = "forward"
+	Drop    FirewallTemplateDefaultActionType = "drop"
+)
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
 

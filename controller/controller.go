@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"time"
 
+	v1beta "github.com/SunSince90/polycube-firewall-template/pkg/apis/polycubenetwork.com/v1beta"
+
 	log "github.com/Sirupsen/logrus"
 	fwt_clientset "github.com/SunSince90/polycube-firewall-template/pkg/client/clientset/versioned"
 	fwt_informer "github.com/SunSince90/polycube-firewall-template/pkg/client/informers/externalversions/polycubenetwork.com/v1beta"
@@ -58,7 +60,7 @@ func NewPcnFirewallTemplateController(kclientset kubernetes.Interface, pclientse
 			log.Infof("Add myresource: %s", key)
 			if err == nil {
 				// add the key to the queue for the handler to get
-				//queue.Add(key)
+				queue.Add(key)
 			}
 		},
 		UpdateFunc: func(oldObj, newObj interface{}) {
@@ -160,7 +162,7 @@ func (c *PcnFirewallTemplateController) processNextItem() bool {
 	defer c.queue.Done(key)
 
 	// assert the string out of the key (format `namespace/name`)
-	//keyRaw := key.(string)
+	keyRaw := key.(string)
 
 	// take the string key and get the object out of the indexer
 	//
@@ -172,7 +174,7 @@ func (c *PcnFirewallTemplateController) processNextItem() bool {
 	// then we want to retry this particular queue key a certain
 	// number of times (5 here) before we forget the queue key
 	// and throw an error
-	/*item, exists, err := c.informer.GetIndexer().GetByKey(keyRaw)
+	item, exists, err := c.informer.GetIndexer().GetByKey(keyRaw)
 	if err != nil {
 		if c.queue.NumRequeues(key) < 5 {
 			c.logger.Errorf("Controller.processNextItem: Failed processing item with key %s with error %v, retrying", key, err)
@@ -182,7 +184,12 @@ func (c *PcnFirewallTemplateController) processNextItem() bool {
 			c.queue.Forget(key)
 			utilruntime.HandleError(err)
 		}
-	}*/
+	}
+
+	if exists {
+		fwt := item.(*v1beta.FirewallTemplate)
+		log.Infof("firewall default actions is %+v\n", fwt.Spec.DefaultActions)
+	}
 
 	// if the item doesn't exist then it was deleted and we need to fire off the handler's
 	// ObjectDeleted method. but if the object does exist that indicates that the object
@@ -190,15 +197,15 @@ func (c *PcnFirewallTemplateController) processNextItem() bool {
 	//
 	// after both instances, we want to forget the key from the queue, as this indicates
 	// a code path of successful queue key processing
-	/*if !exists {
+	if !exists {
 		c.logger.Infof("Controller.processNextItem: object deleted detected: %s", keyRaw)
-		c.handler.ObjectDeleted(item)
+		//c.handler.ObjectDeleted(item)
 		c.queue.Forget(key)
 	} else {
 		c.logger.Infof("Controller.processNextItem: object created detected: %s", keyRaw)
-		c.handler.ObjectCreated(item)
+		//c.handler.ObjectCreated(item)
 		c.queue.Forget(key)
-	}*/
+	}
 
 	// keep the worker loop running by returning true
 	return true
