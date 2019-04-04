@@ -74,11 +74,15 @@ func main() {
 
 func multiple(f fwt_clientset.Interface) {
 	rules := []k8sfirewall.ChainRule{}
-
 	for i := 0; i < 1000; i++ {
 		rules = append(rules, k8sfirewall.ChainRule{
-			Id:  int32(i),
-			Src: string(i),
+			Id:        int32(i),
+			Src:       "255.255.255.255",
+			Dst:       "255.255.255.255",
+			Conntrack: "established",
+			L4proto:   "TCP",
+			Sport:     8080,
+			Dport:     9090,
 		})
 	}
 	firewallClientSet := f.PolycubenetworkV1beta().FirewallTemplates(meta_v1.NamespaceDefault)

@@ -199,7 +199,13 @@ func (c *PcnFirewallTemplateController) processNextItem() bool {
 		} else {
 			log.Infoln("got again")
 			fw.Spec.Rules = append(fw.Spec.Rules, k8sfirewall.ChainRule{
-				Id: 2000,
+				Id:        2000,
+				Src:       "255.255.255.255",
+				Dst:       "255.255.255.255",
+				Conntrack: "established",
+				L4proto:   "TCP",
+				Sport:     8080,
+				Dport:     9090,
 			})
 			log.Infoln("updating at", time.Now().Unix(), fwt.Name)
 			ufw, err := c.pclientset.PolycubenetworkV1beta().FirewallTemplates(meta_v1.NamespaceDefault).Update(fw)
