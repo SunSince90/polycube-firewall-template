@@ -59,8 +59,8 @@ func main() {
 	go func() {
 		time.Sleep(10 * time.Second)
 		log.Infoln("Going to put a new one!")
+		multiple(fclientset)
 	}()
-	multiple(fclientset)
 
 	// use a channel to handle OS signals to terminate and gracefully shut
 	// down processing
@@ -71,7 +71,7 @@ func main() {
 }
 
 func multiple(f fwt_clientset.Interface) {
-	firewallClientSet := f.PolycubenetworkV1beta().FirewallTemplates(meta_v1.NamespaceAll)
+	firewallClientSet := f.PolycubenetworkV1beta().FirewallTemplates(meta_v1.NamespaceDefault)
 	fwt := v1beta.FirewallTemplate{
 		Spec: v1beta.FirewallTemplateSpec{
 			DefaultActions: map[string]v1beta.FirewallTemplateDefaultAction{
@@ -83,5 +83,8 @@ func multiple(f fwt_clientset.Interface) {
 		},
 	}
 
-	firewallClientSet.Create(&fwt)
+	_, err := firewallClientSet.Create(&fwt)
+	if err != nil {
+		log.Infoln("error:", err)
+	}
 }
