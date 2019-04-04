@@ -26,11 +26,13 @@ type FirewallTemplateSpec struct {
 	Message string `json:"message,omitempty"`
 }
 
+// +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
+
 // FirewallTemplateList contains a list of Firewall Templates.
 type FirewallTemplateList struct {
 	metav1.TypeMeta `json:",inline"`
 	// +optional
-	metav1.ListMeta `son:"metadata,omitempty"`
+	metav1.ListMeta `json:"metadata,omitempty"`
 	// Items contains the firewall tempaltes
 	Items []FirewallTemplate `json:"items"`
 }

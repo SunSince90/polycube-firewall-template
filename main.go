@@ -42,7 +42,7 @@ func main() {
 	log.Infoln("Hello, World!")
 
 	kclientset, pclientset := getKubernetesClient()
-	c := controller.NewPcnPolicyController(kclientset, pclientset)
+	c := controller.NewPcnFirewallTemplateController(kclientset, pclientset)
 
 	// use a channel to synchronize the finalization for a graceful shutdown
 	stopCh := make(chan struct{})
